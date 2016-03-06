@@ -18,6 +18,8 @@ public class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutp
     
     public lazy var focusMarkLayer = RSFocusMarkLayer()
     public lazy var cornersLayer = RSCornersLayer()
+    public lazy var targetMaskLayer = RSTargetMaskLayer()
+    public lazy var targetLineLayer = RSTargetLineLayer()
     
     public var tapHandler: ((CGPoint) -> Void)?
     public var barcodesHandler: ((Array<AVMetadataMachineReadableCodeObject>) -> Void)?
@@ -29,6 +31,19 @@ public class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutp
     var lensPosition: Float = 0
     
     // MARK: Public methods
+    
+    public func roi(size: CGSize) -> CGRect {
+        print(size)
+        if size.height > size.width {
+            return CGRectMake(0, size.height / 3.0, size.width, size.height / 3.0)
+        } else {
+            return CGRectMake(size.width * 0.05, size.height * 0.2, size.width * 0.9, size.height * 0.6)
+        }
+    }
+    
+    public func roiPath(size: CGSize) -> CGPath {
+        return UIBezierPath(roundedRect: roi(size), cornerRadius: 10).CGPath
+    }
     
     public func hasFlash() -> Bool {
         if let device = self.device {
@@ -197,6 +212,14 @@ public class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutp
         }
         self.focusMarkLayer.frame = frame
         self.cornersLayer.frame = frame
+        
+        self.targetLineLayer.frame = frame
+        self.targetLineLayer.regionOfInterest = roi(size)
+        
+        self.targetMaskLayer.frame = frame
+        self.targetMaskLayer.regionOfInterest = roi(size)
+        
+        self.output.rectOfInterest = self.videoPreviewLayer!.metadataOutputRectOfInterestForRect(roi(size))
     }
     
     override public func viewDidLoad() {
@@ -242,6 +265,17 @@ public class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutp
             self.view.layer.addSublayer(videoPreviewLayer)
         }
         
+        targetLineLayer.frame = self.view.bounds
+        targetLineLayer.regionOfInterest = roi(UIScreen.mainScreen().bounds.size)
+        self.view.layer.addSublayer(targetLineLayer)
+        
+        targetMaskLayer.frame = self.view.bounds
+        targetMaskLayer.regionOfInterest = roi(UIScreen.mainScreen().bounds.size)
+        self.view.layer.addSublayer(targetMaskLayer)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("avCaptureInputPortFormatDescriptionDidChangeNotification:"), name:AVCaptureInputPortFormatDescriptionDidChangeNotification, object: nil)
+        
+        
         let queue = dispatch_queue_create("com.pdq.rsbarcodes.metadata", DISPATCH_QUEUE_CONCURRENT)
         self.output.setMetadataObjectsDelegate(self, queue: queue)
         if self.session.canAddOutput(self.output) {
@@ -258,6 +292,12 @@ public class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutp
         self.cornersLayer.frame = self.view.bounds
         self.view.layer.addSublayer(self.cornersLayer)
     }
+    
+    func avCaptureInputPortFormatDescriptionDidChangeNotification(notification: NSNotification) {
+        print("Setting rectOfInterest")
+        self.output.rectOfInterest = self.videoPreviewLayer!.metadataOutputRectOfInterestForRect(roi(UIScreen.mainScreen().bounds.size))
+    }
+    
     
     override public func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)

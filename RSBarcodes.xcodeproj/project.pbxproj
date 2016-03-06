@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3821B8FE1C8CF3FE005B11BA /* RSTargetMaskLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3821B8FD1C8CF3FE005B11BA /* RSTargetMaskLayer.swift */; };
+		3821B9001C8CF437005B11BA /* RSTargetLineLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3821B8FF1C8CF437005B11BA /* RSTargetLineLayer.swift */; };
 		D08336CA1A209AAB004EE128 /* RSCode39Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08336B91A209AAB004EE128 /* RSCode39Generator.swift */; };
 		D08336CB1A209AAB004EE128 /* RSCode39Mod43Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08336BA1A209AAB004EE128 /* RSCode39Mod43Generator.swift */; };
 		D08336CC1A209AAB004EE128 /* RSCode93Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08336BB1A209AAB004EE128 /* RSCode93Generator.swift */; };
@@ -28,6 +30,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3821B8FD1C8CF3FE005B11BA /* RSTargetMaskLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RSTargetMaskLayer.swift; path = Source/RSTargetMaskLayer.swift; sourceTree = SOURCE_ROOT; };
+		3821B8FF1C8CF437005B11BA /* RSTargetLineLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RSTargetLineLayer.swift; path = Source/RSTargetLineLayer.swift; sourceTree = SOURCE_ROOT; };
 		D08336371A202E81004EE128 /* RSBarcodes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RSBarcodes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D08336B81A209AA0004EE128 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Source/Info.plist; sourceTree = SOURCE_ROOT; };
 		D08336B91A209AAB004EE128 /* RSCode39Generator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RSCode39Generator.swift; path = Source/RSCode39Generator.swift; sourceTree = SOURCE_ROOT; };
@@ -99,6 +103,8 @@
 				D08336C81A209AAB004EE128 /* StringExtension.swift */,
 				D08336C91A209AAB004EE128 /* UIColorExtension.swift */,
 				D083363A1A202E81004EE128 /* Supporting Files */,
+				3821B8FD1C8CF3FE005B11BA /* RSTargetMaskLayer.swift */,
+				3821B8FF1C8CF437005B11BA /* RSTargetLineLayer.swift */,
 			);
 			path = RSBarcodes;
 			sourceTree = "<group>";
@@ -179,6 +185,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3821B8FE1C8CF3FE005B11BA /* RSTargetMaskLayer.swift in Sources */,
 				D08336DA1A209AAB004EE128 /* UIColorExtension.swift in Sources */,
 				D08336CA1A209AAB004EE128 /* RSCode39Generator.swift in Sources */,
 				D0E879421BDE13D000D1A577 /* RSCodeDataMatrixGenerator.swift in Sources */,
@@ -197,6 +204,7 @@
 				D08336D21A209AAB004EE128 /* RSEANGenerator.swift in Sources */,
 				D08336CC1A209AAB004EE128 /* RSCode93Generator.swift in Sources */,
 				D08336CB1A209AAB004EE128 /* RSCode39Mod43Generator.swift in Sources */,
+				3821B9001C8CF437005B11BA /* RSTargetLineLayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
