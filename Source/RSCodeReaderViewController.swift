@@ -34,10 +34,14 @@ public class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutp
     
     public func roi(size: CGSize) -> CGRect {
         print(size)
-        if size.height > size.width {
-            return CGRectMake(0, size.height / 3.0, size.width, size.height / 3.0)
+        if max(size.height, size.width) > 700 {
+            return CGRectMake((size.width / 2) - 188, (size.height / 2) - 113, 376, 226)
         } else {
-            return CGRectMake(size.width * 0.05, size.height * 0.2, size.width * 0.9, size.height * 0.6)
+            if size.height > size.width {
+                return CGRectMake(0, size.height / 3.0, size.width, size.height / 3.0)
+            } else {
+                return CGRectMake(size.width * 0.05, size.height * 0.2, size.width * 0.9, size.height * 0.6)
+            }
         }
     }
     
