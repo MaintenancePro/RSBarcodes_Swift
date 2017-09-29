@@ -9,228 +9,127 @@
 import UIKit
 import AVFoundation
 
-public class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
-    
-    public lazy var device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
-    public lazy var output = AVCaptureMetadataOutput()
-    public lazy var session = AVCaptureSession()
+open class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
+
+    open var device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
+    open var output = AVCaptureMetadataOutput()
+    open var session = AVCaptureSession()
     var videoPreviewLayer: AVCaptureVideoPreviewLayer?
-    
-    public lazy var focusMarkLayer = RSFocusMarkLayer()
-    public lazy var cornersLayer = RSCornersLayer()
-    public lazy var targetMaskLayer = RSTargetMaskLayer()
-    public lazy var targetLineLayer = RSTargetLineLayer()
-    
-    public var tapHandler: ((CGPoint) -> Void)?
-    public var barcodesHandler: ((Array<AVMetadataMachineReadableCodeObject>) -> Void)?
-    
-    var ticker: NSTimer?
-    
-    public var isCrazyMode = false
+
+    open lazy var focusMarkLayer = RSFocusMarkLayer()
+    open lazy var cornersLayer = RSCornersLayer()
+    open lazy var targetMaskLayer = RSTargetMaskLayer()
+    open lazy var targetLineLayer = RSTargetLineLayer()
+
+    open var tapHandler: ((CGPoint) -> Void)?
+    open var barcodesHandler: ((Array<AVMetadataMachineReadableCodeObject>) -> Void)?
+
+    var ticker: Timer?
+
+    open var isCrazyMode = false
     var isCrazyModeStarted = false
     var lensPosition: Float = 0
-    
+
+    fileprivate struct Platform {
+        static let isSimulator: Bool = {
+            var isSim = false
+            #if arch(i386) || arch(x86_64)
+                isSim = true
+            #endif
+            return isSim
+        }()
+    }
+
     // MARK: Public methods
-    
-    public func roi(size: CGSize) -> CGRect {
+
+    open func roi(size: CGSize) -> CGRect {
         print(size)
         if max(size.height, size.width) > 700 {
-            return CGRectMake((size.width / 2) - 240, (size.height / 2) - 160, 480, 320)
+            return CGRect(x: (size.width / 2) - 240, y: (size.height / 2) - 160, width: 480, height: 320)
         } else {
             if size.height > size.width {
-                return CGRectMake(0, size.height / 3.0, size.width, size.height / 3.0)
+                return CGRect(x: 0, y: size.height / 3.0, width: size.width, height: size.height / 3.0)
             } else {
-                return CGRectMake(size.width * 0.05, size.height * 0.2, size.width * 0.9, size.height * 0.6)
+                return CGRect(x: size.width * 0.05, y: size.height * 0.2, width: size.width * 0.9, height: size.height * 0.6)
             }
         }
     }
-    
-    public func roiPath(size: CGSize) -> CGPath {
-        return UIBezierPath(roundedRect: roi(size), cornerRadius: 10).CGPath
+
+    open func roiPath(size: CGSize) -> CGPath {
+        return UIBezierPath(roundedRect: roi(size: size), cornerRadius: 10).cgPath
     }
-    
-    public func hasFlash() -> Bool {
+
+    open func hasFlash() -> Bool {
         if let device = self.device {
             return device.hasFlash
         }
         return false
     }
-    
-    public func hasTorch() -> Bool {
+
+    open func hasTorch() -> Bool {
         if let device = self.device {
             return device.hasTorch
         }
         return false
     }
-    
-    public func toggleTorch() -> Bool {
+
+    open func switchCamera() -> AVCaptureDevicePosition {
+        if !Platform.isSimulator {
+            self.session.stopRunning()
+            let captureDevice = self.captureDevice()
+            if let device = captureDevice {
+                self.device = device
+            }
+            self.setupCamera()
+            self.session.startRunning()
+            return self.device!.position
+        } else {
+            return .unspecified
+        }
+    }
+
+    open func toggleTorch() -> Bool {
         if self.hasTorch() {
             self.session.beginConfiguration()
             do {
-                try self.device.lockForConfiguration()
+                try self.device?.lockForConfiguration()
             } catch _ {
             }
-            
-            if self.device.torchMode == .Off {
-                self.device.torchMode = .On
-            } else if self.device.torchMode == .On {
-                self.device.torchMode = .Off
+
+            if self.device?.torchMode == .off {
+                self.device?.torchMode = .on
+            } else if self.device?.torchMode == .on {
+                self.device?.torchMode = .off
             }
-            
-            self.device.unlockForConfiguration()
+
+            self.device?.unlockForConfiguration()
             self.session.commitConfiguration()
-            
-            return self.device.torchMode == .On
+
+            return self.device!.torchMode == .on
         }
         return false
     }
-    
+
     // MARK: Private methods
-    
-    class func interfaceOrientationToVideoOrientation(orientation : UIInterfaceOrientation) -> AVCaptureVideoOrientation {
-        switch (orientation) {
-        case .Unknown:
-            fallthrough
-        case .Portrait:
-            return AVCaptureVideoOrientation.Portrait
-        case .PortraitUpsideDown:
-            return AVCaptureVideoOrientation.PortraitUpsideDown
-        case .LandscapeLeft:
-            return AVCaptureVideoOrientation.LandscapeLeft
-        case .LandscapeRight:
-            return AVCaptureVideoOrientation.LandscapeRight
-        }
-    }
-    
-    func autoUpdateLensPosition() {
-        self.lensPosition += 0.01
-        if self.lensPosition > 1 {
-            self.lensPosition = 0
-        }
-        do {
-            try device.lockForConfiguration()
-            self.device.setFocusModeLockedWithLensPosition(self.lensPosition, completionHandler: nil)
-            device.unlockForConfiguration()
-        } catch _ {
-        }
-        if session.running {
-            let when = dispatch_time(DISPATCH_TIME_NOW, Int64(10 * Double(USEC_PER_SEC)))
-            dispatch_after(when, dispatch_get_main_queue(), {
-                self.autoUpdateLensPosition()
-            })
-        }
-    }
-    
-    func onTick() {
-        if let ticker = self.ticker {
-            ticker.invalidate()
-        }
-        self.cornersLayer.cornersArray = []
-    }
-    
-    func onTap(gesture: UITapGestureRecognizer) {
-        let tapPoint = gesture.locationInView(self.view)
-        let focusPoint = CGPointMake(
-            tapPoint.x / self.view.bounds.size.width,
-            tapPoint.y / self.view.bounds.size.height)
-        
-        if let device = self.device {
-            do {
-                try device.lockForConfiguration()
-                if device.focusPointOfInterestSupported {
-                    device.focusPointOfInterest = focusPoint
-                } else {
-                    print("Focus point of interest not supported.")
+
+    func captureDevice() -> AVCaptureDevice? {
+        if self.device?.position == AVCaptureDevicePosition.back {
+            for device: AVCaptureDevice in AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as! Array {
+                if device.position == AVCaptureDevicePosition.front {
+                    return device
                 }
-                if self.isCrazyMode {
-                    if device.isFocusModeSupported(.Locked) {
-                        device.focusMode = .Locked
-                    } else {
-                        print("Locked focus not supported.")
-                    }
-                    if !self.isCrazyModeStarted {
-                        self.isCrazyModeStarted = true
-                        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                            self.autoUpdateLensPosition()
-                        })
-                    }
-                } else {
-                    if device.isFocusModeSupported(.ContinuousAutoFocus) {
-                        device.focusMode = .ContinuousAutoFocus
-                    } else if device.isFocusModeSupported(.AutoFocus) {
-                        device.focusMode = .AutoFocus
-                    } else {
-                        print("Auto focus not supported.")
-                    }
+            }
+        } else if self.device?.position == AVCaptureDevicePosition.front {
+            for device: AVCaptureDevice in AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) as! Array {
+                if device.position == AVCaptureDevicePosition.back {
+                    return device
                 }
-                if device.autoFocusRangeRestrictionSupported {
-                    device.autoFocusRangeRestriction = .None
-                } else {
-                    print("Auto focus range restriction not supported.")
-                }
-                device.unlockForConfiguration()
-                self.focusMarkLayer.point = tapPoint
-            } catch _ {
             }
         }
-        
-        if let tapHandler = self.tapHandler {
-            tapHandler(tapPoint)
-        }
+        return nil
     }
-    
-    func onApplicationWillEnterForeground() {
-        self.session.startRunning()
-    }
-    
-    func onApplicationDidEnterBackground() {
-        self.session.stopRunning()
-    }
-    
-    // MARK: Deinitialization
-    
-    deinit {
-        print("RSCodeReaderViewController deinit")
-    }
-    
-    // MARK: View lifecycle
-    
-    override public func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        if let videoPreviewLayer = self.videoPreviewLayer {
-            let videoOrientation = RSCodeReaderViewController.interfaceOrientationToVideoOrientation(UIApplication.sharedApplication().statusBarOrientation)
-            if videoPreviewLayer.connection.supportsVideoOrientation
-                && videoPreviewLayer.connection.videoOrientation != videoOrientation {
-                    videoPreviewLayer.connection.videoOrientation = videoOrientation
-            }
-        }
-    }
-    
-    override public func viewWillTransitionToSize(size: CGSize, withTransitionCoordinator coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransitionToSize(size, withTransitionCoordinator: coordinator)
-        
-        let frame = CGRectMake(0, 0, size.width, size.height)
-        if let videoPreviewLayer = self.videoPreviewLayer {
-            videoPreviewLayer.frame = frame
-        }
-        self.focusMarkLayer.frame = frame
-        self.cornersLayer.frame = frame
-        
-        self.targetLineLayer.frame = frame
-        self.targetLineLayer.regionOfInterest = roi(size)
-        
-        self.targetMaskLayer.frame = frame
-        self.targetMaskLayer.regionOfInterest = roi(size)
-        
-        self.output.rectOfInterest = self.videoPreviewLayer!.metadataOutputRectOfInterestForRect(roi(size))
-    }
-    
-    override public func viewDidLoad() {
-        super.viewDidLoad()
-        
-        self.view.backgroundColor = UIColor.clearColor()
-        
+
+    func setupCamera() {
         var error : NSError?
         let input: AVCaptureDeviceInput!
         do {
@@ -243,113 +142,286 @@ public class RSCodeReaderViewController: UIViewController, AVCaptureMetadataOutp
             print(error.description)
             return
         }
-        
+
         if let device = self.device {
             do {
                 try device.lockForConfiguration()
-                if self.device.isFocusModeSupported(.ContinuousAutoFocus) {
-                    self.device.focusMode = .ContinuousAutoFocus
+                if (self.device?.isFocusModeSupported(.continuousAutoFocus))! {
+                    self.device?.focusMode = .continuousAutoFocus
                 }
-                if self.device.autoFocusRangeRestrictionSupported {
-                    self.device.autoFocusRangeRestriction = .Near
+                if (self.device?.isAutoFocusRangeRestrictionSupported)! {
+                    self.device?.autoFocusRangeRestriction = .near
                 }
-                self.device.unlockForConfiguration()
+                self.device?.unlockForConfiguration()
             } catch _ {
             }
         }
-        
+
+        // Remove previous added inputs from session
+        for input in self.session.inputs {
+            self.session.removeInput(input as! AVCaptureInput)
+        }
         if self.session.canAddInput(input) {
             self.session.addInput(input)
         }
-        
+
+        if let videoPreviewLayer = self.videoPreviewLayer {
+            videoPreviewLayer.removeFromSuperlayer()
+        }
         self.videoPreviewLayer = AVCaptureVideoPreviewLayer(session: session)
         if let videoPreviewLayer = self.videoPreviewLayer {
             videoPreviewLayer.videoGravity = AVLayerVideoGravityResizeAspectFill
             videoPreviewLayer.frame = self.view.bounds
-            self.view.layer.addSublayer(videoPreviewLayer)
+            self.view.layer.insertSublayer(videoPreviewLayer, at: 0)
         }
-        
-        targetLineLayer.frame = self.view.bounds
-        targetLineLayer.regionOfInterest = roi(UIScreen.mainScreen().bounds.size)
-        self.view.layer.addSublayer(targetLineLayer)
-        
-        targetMaskLayer.frame = self.view.bounds
-        targetMaskLayer.regionOfInterest = roi(UIScreen.mainScreen().bounds.size)
-        self.view.layer.addSublayer(targetMaskLayer)
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector("avCaptureInputPortFormatDescriptionDidChangeNotification:"), name:AVCaptureInputPortFormatDescriptionDidChangeNotification, object: nil)
-        
-        
-        let queue = dispatch_queue_create("com.pdq.rsbarcodes.metadata", DISPATCH_QUEUE_CONCURRENT)
-        self.output.setMetadataObjectsDelegate(self, queue: queue)
+
+        if self.output.metadataObjectsDelegate == nil
+            || self.output.metadataObjectsCallbackQueue == nil {
+            let queue = DispatchQueue(label: "com.pdq.rsbarcodes.metadata", attributes: DispatchQueue.Attributes.concurrent)
+            self.output.setMetadataObjectsDelegate(self, queue: queue)
+        }
+        // Remove previous added outputs from session
+        var metadataObjectTypes: [AnyObject]?
+        for output in self.session.outputs {
+            metadataObjectTypes = (output as AnyObject).metadataObjectTypes as [AnyObject]?
+            self.session.removeOutput(output as! AVCaptureOutput)
+        }
         if self.session.canAddOutput(self.output) {
             self.session.addOutput(self.output)
-            self.output.metadataObjectTypes = self.output.availableMetadataObjectTypes
+            if let metadataObjectTypes = metadataObjectTypes {
+                self.output.metadataObjectTypes = metadataObjectTypes
+            } else  {
+                self.output.metadataObjectTypes = self.output.availableMetadataObjectTypes
+            }
         }
-        
-        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: "onTap:")
-        self.view.addGestureRecognizer(tapGestureRecognizer)
-        
-        self.focusMarkLayer.frame = self.view.bounds
-        self.view.layer.addSublayer(self.focusMarkLayer)
-        
-        self.cornersLayer.frame = self.view.bounds
-        self.view.layer.addSublayer(self.cornersLayer)
     }
-    
+
+    class func interfaceOrientationToVideoOrientation(_ orientation : UIInterfaceOrientation) -> AVCaptureVideoOrientation {
+        switch (orientation) {
+        case .unknown:
+            fallthrough
+        case .portrait:
+            return AVCaptureVideoOrientation.portrait
+        case .portraitUpsideDown:
+            return AVCaptureVideoOrientation.portraitUpsideDown
+        case .landscapeLeft:
+            return AVCaptureVideoOrientation.landscapeLeft
+        case .landscapeRight:
+            return AVCaptureVideoOrientation.landscapeRight
+        }
+    }
+
+    func autoUpdateLensPosition() {
+        self.lensPosition += 0.01
+        if self.lensPosition > 1 {
+            self.lensPosition = 0
+        }
+        do {
+            try device?.lockForConfiguration()
+            self.device?.setFocusModeLockedWithLensPosition(self.lensPosition, completionHandler: nil)
+            device?.unlockForConfiguration()
+        } catch _ {
+        }
+        if session.isRunning {
+            let when = DispatchTime.now() + Double(Int64(10 * Double(USEC_PER_SEC))) / Double(NSEC_PER_SEC)
+            DispatchQueue.main.asyncAfter(deadline: when, execute: {
+                self.autoUpdateLensPosition()
+            })
+        }
+    }
+
+    func onTick() {
+        if let ticker = self.ticker {
+            ticker.invalidate()
+        }
+        self.cornersLayer.cornersArray = []
+    }
+
+    func onTap(_ gesture: UITapGestureRecognizer) {
+        let tapPoint = gesture.location(in: self.view)
+        let focusPoint = CGPoint(
+            x: tapPoint.x / self.view.bounds.size.width,
+            y: tapPoint.y / self.view.bounds.size.height)
+
+        if let device = self.device {
+            do {
+                try device.lockForConfiguration()
+                if device.isFocusPointOfInterestSupported {
+                    device.focusPointOfInterest = focusPoint
+                } else {
+                    print("Focus point of interest not supported.")
+                }
+                if self.isCrazyMode {
+                    if device.isFocusModeSupported(.locked) {
+                        device.focusMode = .locked
+                    } else {
+                        print("Locked focus not supported.")
+                    }
+                    if !self.isCrazyModeStarted {
+                        self.isCrazyModeStarted = true
+                        DispatchQueue.main.async(execute: { () -> Void in
+                            self.autoUpdateLensPosition()
+                        })
+                    }
+                } else {
+                    if device.isFocusModeSupported(.continuousAutoFocus) {
+                        device.focusMode = .continuousAutoFocus
+                    } else if device.isFocusModeSupported(.autoFocus) {
+                        device.focusMode = .autoFocus
+                    } else {
+                        print("Auto focus not supported.")
+                    }
+                }
+                if device.isAutoFocusRangeRestrictionSupported {
+                    device.autoFocusRangeRestriction = .none
+                } else {
+                    print("Auto focus range restriction not supported.")
+                }
+                device.unlockForConfiguration()
+                self.focusMarkLayer.point = tapPoint
+            } catch _ {
+            }
+        }
+
+        if let tapHandler = self.tapHandler {
+            tapHandler(tapPoint)
+        }
+    }
+
+    func onApplicationWillEnterForeground() {
+        if !Platform.isSimulator {
+            self.session.startRunning()
+        }
+    }
+
+    func onApplicationDidEnterBackground() {
+        if !Platform.isSimulator {
+            self.session.stopRunning()
+        }
+    }
+
+    // MARK: Deinitialization
+
+    deinit {
+        print("RSCodeReaderViewController deinit")
+    }
+
+    // MARK: View lifecycle
+
+    override open func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        if let videoPreviewLayer = self.videoPreviewLayer {
+            let videoOrientation = RSCodeReaderViewController.interfaceOrientationToVideoOrientation(UIApplication.shared.statusBarOrientation)
+            if videoPreviewLayer.connection.isVideoOrientationSupported
+                && videoPreviewLayer.connection.videoOrientation != videoOrientation {
+                videoPreviewLayer.connection.videoOrientation = videoOrientation
+            }
+            videoPreviewLayer.frame = self.view.bounds
+        }
+    }
+
+    override open func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+
+        let frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        if let videoPreviewLayer = self.videoPreviewLayer {
+            videoPreviewLayer.frame = frame
+        }
+        self.focusMarkLayer.frame = frame
+        self.cornersLayer.frame = frame
+
+        self.targetLineLayer.frame = frame
+        self.targetLineLayer.regionOfInterest = roi(size: size)
+
+        self.targetMaskLayer.frame = frame
+        self.targetMaskLayer.regionOfInterest = roi(size: size)
+
+        self.output.rectOfInterest = self.videoPreviewLayer!.metadataOutputRectOfInterest(for: roi(size: size))
+    }
+
+    override open func viewDidLoad() {
+        super.viewDidLoad()
+
+        self.view.backgroundColor = UIColor.clear
+
+        self.setupCamera()
+
+        targetLineLayer.frame = self.view.bounds
+        targetLineLayer.regionOfInterest = roi(size: UIScreen.main.bounds.size)
+        self.view.layer.addSublayer(targetLineLayer)
+
+        targetMaskLayer.frame = self.view.bounds
+        targetMaskLayer.regionOfInterest = roi(size: UIScreen.main.bounds.size)
+        self.view.layer.addSublayer(targetMaskLayer)
+
+        let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(RSCodeReaderViewController.onTap(_:)))
+        self.view.addGestureRecognizer(tapGestureRecognizer)
+
+        self.focusMarkLayer.frame = self.view.bounds
+        self.view.layer.insertSublayer(self.focusMarkLayer, above: self.videoPreviewLayer)
+
+        self.cornersLayer.frame = self.view.bounds
+        self.view.layer.insertSublayer(self.cornersLayer, above: self.videoPreviewLayer)
+    }
+
     func avCaptureInputPortFormatDescriptionDidChangeNotification(notification: NSNotification) {
         print("Setting rectOfInterest")
-        self.output.rectOfInterest = self.videoPreviewLayer!.metadataOutputRectOfInterestForRect(roi(UIScreen.mainScreen().bounds.size))
+        self.output.rectOfInterest = self.videoPreviewLayer!.metadataOutputRectOfInterest(for: roi(size: UIScreen.main.bounds.size))
     }
-    
-    
-    override public func viewWillAppear(animated: Bool) {
+
+    override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "onApplicationWillEnterForeground", name:UIApplicationWillEnterForegroundNotification, object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "onApplicationDidEnterBackground", name: UIApplicationDidEnterBackgroundNotification, object: nil)
-        
-        self.session.startRunning()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(RSCodeReaderViewController.onApplicationWillEnterForeground), name:NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(RSCodeReaderViewController.onApplicationDidEnterBackground), name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
+
+        if !Platform.isSimulator {
+            self.session.startRunning()
+        }
     }
-    
-    override public func viewDidDisappear(animated: Bool) {
+
+    override open func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIApplicationWillEnterForegroundNotification, object: nil)
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: UIApplicationDidEnterBackgroundNotification, object: nil)
-        
-        self.session.stopRunning()
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name.UIApplicationDidEnterBackground, object: nil)
+        if !Platform.isSimulator {
+            self.session.stopRunning()
+        }
     }
-    
+
     // MARK: AVCaptureMetadataOutputObjectsDelegate
-    
-    public func captureOutput(captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [AnyObject]!, fromConnection connection: AVCaptureConnection!) {
+
+    open func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
         var barcodeObjects : Array<AVMetadataMachineReadableCodeObject> = []
-        var cornersArray : Array<[AnyObject]> = []
-        for metadataObject : AnyObject in metadataObjects {
+        var cornersArray : Array<[Any]> = []
+        for metadataObject in metadataObjects {
             if let videoPreviewLayer = self.videoPreviewLayer {
-                let transformedMetadataObject = videoPreviewLayer.transformedMetadataObjectForMetadataObject(metadataObject as! AVMetadataObject)
-                if transformedMetadataObject.isKindOfClass(AVMetadataMachineReadableCodeObject.self) {
-                    let barcodeObject = transformedMetadataObject as! AVMetadataMachineReadableCodeObject
-                    barcodeObjects.append(barcodeObject)
-                    cornersArray.append(barcodeObject.corners)
+                let transformedMetadataObject = videoPreviewLayer.transformedMetadataObject(for: metadataObject as! AVMetadataObject)
+                if let transformedMetadataObject = transformedMetadataObject {
+                    if transformedMetadataObject.isKind(of: AVMetadataMachineReadableCodeObject.self) {
+                        let barcodeObject = transformedMetadataObject as! AVMetadataMachineReadableCodeObject
+                        barcodeObjects.append(barcodeObject)
+                        cornersArray.append(barcodeObject.corners)
+                    }
                 }
             }
         }
-        
+
         self.cornersLayer.cornersArray = cornersArray
-        
+
         if barcodeObjects.count > 0 {
             if let barcodesHandler = self.barcodesHandler {
                 barcodesHandler(barcodeObjects)
             }
         }
-        
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+
+        DispatchQueue.main.async(execute: { () -> Void in
             if let ticker = self.ticker {
                 ticker.invalidate()
             }
-            self.ticker = NSTimer.scheduledTimerWithTimeInterval(0.4, target: self, selector: "onTick", userInfo: nil, repeats: true)
+            self.ticker = Timer.scheduledTimer(timeInterval: 0.4, target: self, selector: #selector(RSCodeReaderViewController.onTick), userInfo: nil, repeats: true)
         })
     }
 }

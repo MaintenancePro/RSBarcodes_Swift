@@ -14,24 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D08336361A202E81004EE128"
-               BuildableName = "RSBarcodes.framework"
-               BlueprintName = "RSBarcodes"
-               ReferencedContainer = "container:RSBarcodes.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D08336411A202E81004EE128"
-               BuildableName = "RSBarcodesTests.xctest"
-               BlueprintName = "RSBarcodesTests"
-               ReferencedContainer = "container:RSBarcodes.xcodeproj">
+               BlueprintIdentifier = "D073990D19468EED003F0E14"
+               BuildableName = "RSBarcodesSample.app"
+               BlueprintName = "RSBarcodesSample"
+               ReferencedContainer = "container:RSBarcodesSample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,20 +32,20 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D08336411A202E81004EE128"
-               BuildableName = "RSBarcodesTests.xctest"
-               BlueprintName = "RSBarcodesTests"
-               ReferencedContainer = "container:RSBarcodes.xcodeproj">
+               BlueprintIdentifier = "D073991F19468EED003F0E14"
+               BuildableName = "RSBarcodesSampleTests.xctest"
+               BlueprintName = "RSBarcodesSampleTests"
+               ReferencedContainer = "container:RSBarcodesSample.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D08336361A202E81004EE128"
-            BuildableName = "RSBarcodes.framework"
-            BlueprintName = "RSBarcodes"
-            ReferencedContainer = "container:RSBarcodes.xcodeproj">
+            BlueprintIdentifier = "D073990D19468EED003F0E14"
+            BuildableName = "RSBarcodesSample.app"
+            BlueprintName = "RSBarcodesSample"
+            ReferencedContainer = "container:RSBarcodesSample.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -75,15 +61,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D08336361A202E81004EE128"
-            BuildableName = "RSBarcodes.framework"
-            BlueprintName = "RSBarcodes"
-            ReferencedContainer = "container:RSBarcodes.xcodeproj">
+            BlueprintIdentifier = "D073990D19468EED003F0E14"
+            BuildableName = "RSBarcodesSample.app"
+            BlueprintName = "RSBarcodesSample"
+            ReferencedContainer = "container:RSBarcodesSample.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -93,15 +80,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "D08336361A202E81004EE128"
-            BuildableName = "RSBarcodes.framework"
-            BlueprintName = "RSBarcodes"
-            ReferencedContainer = "container:RSBarcodes.xcodeproj">
+            BlueprintIdentifier = "D073990D19468EED003F0E14"
+            BuildableName = "RSBarcodesSample.app"
+            BlueprintName = "RSBarcodesSample"
+            ReferencedContainer = "container:RSBarcodesSample.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

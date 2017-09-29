@@ -17,11 +17,20 @@ class BarcodeReaderViewController: RSCodeReaderViewController {
     
     @IBOutlet var toggle: UIButton!
     
-    @IBAction func close(sender: AnyObject?) {
+    @IBAction func switchCamera(_ sender: AnyObject?) {
+        let position = self.switchCamera()
+        if position == AVCaptureDevicePosition.back {
+            print("back camera.")
+        } else {
+            print("front camera.")
+        }
+    }
+    
+    @IBAction func close(_ sender: AnyObject?) {
         print("close called.")
     }
     
-    @IBAction func toggle(sender: AnyObject?) {
+    @IBAction func toggle(_ sender: AnyObject?) {
         let isTorchOn = self.toggleTorch()
         print(isTorchOn)
     }
@@ -32,26 +41,30 @@ class BarcodeReaderViewController: RSCodeReaderViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.focusMarkLayer.strokeColor = UIColor.redColor().CGColor
+        // MARK: NOTE: Uncomment the following line to enable crazy mode
+        // self.isCrazyMode = true
         
-        self.cornersLayer.strokeColor = UIColor.yellowColor().CGColor
+        self.focusMarkLayer.strokeColor = UIColor.red.cgColor
+        
+        self.cornersLayer.strokeColor = UIColor.yellow.cgColor
         
         self.tapHandler = { point in
             print(point)
         }
         
-        
+        // MARK: NOTE: If you want to detect specific barcode types, you should update the types
         let types = NSMutableArray(array: self.output.availableMetadataObjectTypes)
-        types.removeObject(AVMetadataObjectTypeQRCode)
+        // MARK: NOTE: Uncomment the following line remove QRCode scanning capability
+        // types.removeObject(AVMetadataObjectTypeQRCode)
         self.output.metadataObjectTypes = NSArray(array: types) as [AnyObject]
         
         // MARK: NOTE: If you layout views in storyboard, you should these 3 lines
         for subview in self.view.subviews {
-            self.view.bringSubviewToFront(subview)
+            self.view.bringSubview(toFront: subview)
         }
         
         if !self.hasTorch() {
-            self.toggle.enabled = false
+            self.toggle.isEnabled = false
         }
         
         self.barcodesHandler = { barcodes in
@@ -61,31 +74,35 @@ class BarcodeReaderViewController: RSCodeReaderViewController {
                     self.barcode = barcode.stringValue
                     print("Barcode found: type=" + barcode.type + " value=" + barcode.stringValue)
                     
-                    dispatch_async(dispatch_get_main_queue(), {
-                        self.performSegueWithIdentifier("nextView", sender: self)
+                    DispatchQueue.main.async(execute: {
+                        self.performSegue(withIdentifier: "nextView", sender: self)
                         
                         // MARK: NOTE: Perform UI related actions here.
                     })
+                    
+                    // MARK: NOTE: break here to only handle the first barcode object
+                    break
                 }
             }
         }
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         self.dispatched = false // reset the flag so user can do another scan
         
         super.viewWillAppear(animated)
         
-        self.navigationController?.navigationBarHidden = true
-        
+        self.navigationController?.isNavigationBarHidden = true
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        self.navigationController?.navigationBarHidden = false
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        self.navigationController?.isNavigationBarHidden = false
         
         if segue.identifier == "nextView" {
-            let destinationVC = segue.destinationViewController as! BarcodeDisplayViewController
-            destinationVC.contents = self.barcode
+            let destinationVC = segue.destination as! BarcodeDisplayViewController
+            if !self.barcode.isEmpty {
+                destinationVC.contents = self.barcode
+            }
         }
     }
 }

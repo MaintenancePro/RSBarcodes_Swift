@@ -3,6 +3,7 @@
 </p>
 
 RSBarcodes, now Swift.
+[![Build Status](https://travis-ci.org/yeahdongcn/RSBarcodes_Swift.svg?branch=Swift-3.0)](https://travis-ci.org/yeahdongcn/RSBarcodes_Swift)
 ==========
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![Total views](https://sourcegraph.com/api/repos/github.com/yeahdongcn/RSBarcodes_Swift/counters/views.png)](https://sourcegraph.com/github.com/yeahdongcn/RSBarcodes_Swift)
@@ -43,7 +44,7 @@ Simply add the following lines to your `Podfile`:
 # required by Cocoapods 0.36.0.rc.1 for Swift Pods
 use_frameworks! 
 
-pod 'RSBarcodes_Swift', '~> 0.1.5'
+pod 'RSBarcodes_Swift', '~> 0.1.9'
 ```
 
 Need to import RSBarcodes_Swift manually in the ViewController file after creating the file using wizard.
@@ -55,7 +56,7 @@ Need to import RSBarcodes_Swift manually in the ViewController file after creati
 Simply add the following line to your `Cartfile`:
 
 ```ruby
-github "yeahdongcn/RSBarcodes_Swift" >= 0.1.5
+github "yeahdongcn/RSBarcodes_Swift" >= 0.1.9
 ```
 
 Need to import RSBarcodes_Swift manually in the ViewController file after creating the file using wizard.
@@ -73,8 +74,8 @@ Need to import RSBarcodes_Swift manually in the ViewController file after creati
 
 ##Usage
 
-[HOW TO USE GENERATOR](https://github.com/yeahdongcn/RSBarcodes_Swift/tree/CB) and 
-[HOW TO USE READER](https://github.com/yeahdongcn/RSBarcodes_Swift/tree/Vicky)
+[HOW TO USE GENERATOR](#generator-1) and 
+[HOW TO USE READER](#reader-1)
 
 ###Generators
 
@@ -110,12 +111,12 @@ The following are steps to get the barcode reader working:
         self.cornersLayer.strokeColor = UIColor.yellowColor().CGColor
         
         self.tapHandler = { point in
-            println(point)
+            print(point)
         }
         
         self.barcodesHandler = { barcodes in
             for barcode in barcodes {
-                println("Barcode found: type=" + barcode.type + " value=" + barcode.stringValue)
+                print("Barcode found: type=" + barcode.type + " value=" + barcode.stringValue)
             }
         }
     }
@@ -126,9 +127,17 @@ If you want to ignore some code types, you'd better add the following lines:
     types.removeObject(AVMetadataObjectTypeQRCode)
     self.output.metadataObjectTypes = NSArray(array: types)
     
-###Helper
+###Validator
+
+To validate codes:
+
+    let isValid = RSUnifiedCodeValidator.shared.isValid(code, machineReadableCodeObjectType: AVMetadataObjectTypeEAN13Code)
+
+###Image helpers
 
 Use `RSAbstractCodeGenerator.resizeImage(<#source: UIImage#>, scale: <#CGFloat#>)` to scale the generated image.
+
+Use `RSAbstractCodeGenerator.resizeImage(<#T##source: UIImage##UIImage#>, targetSize: <#T##CGSize#>, contentMode: <#T##UIViewContentMode#>)` to fill/fit the bounds of something to the best capability and don't necessarily know what scale is too much to fill/fit, or if the imageView itself is flexible.
 
 ##Miscellaneous
 

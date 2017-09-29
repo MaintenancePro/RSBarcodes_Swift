@@ -10,33 +10,33 @@ import UIKit
 import QuartzCore
 
 public class RSTargetLineLayer: CALayer {
-    public var strokeColor = UIColor(red: 255, green: 0, blue: 0, alpha: 1).CGColor
-    public var strokeWidth: CGFloat = 1
+    open var strokeColor = UIColor(red: 255, green: 0, blue: 0, alpha: 1).cgColor
+    open var strokeWidth: CGFloat = 1
     
-    public var regionOfInterest: CGRect = CGRect(x: 0, y: 0, width: 0, height: 0) {
+    open var regionOfInterest: CGRect = CGRect(x: 0, y: 0, width: 0, height: 0) {
         willSet {
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async {
                 self.setNeedsDisplay()
-            })
+            }
         }
     }
     
-    override public func drawInContext(ctx: CGContext) {
+    override open func draw(in ctx: CGContext) {
         objc_sync_enter(self)
-        CGContextSaveGState(ctx)
+        ctx.saveGState()
         
-        CGContextSetShouldAntialias(ctx, true)
-        CGContextSetAllowsAntialiasing(ctx, true)
+        ctx.setShouldAntialias(true)
+        ctx.setAllowsAntialiasing(true)
         
-        CGContextSetStrokeColorWithColor(ctx, self.strokeColor)
-        CGContextSetLineWidth(ctx, self.strokeWidth)
-        CGContextMoveToPoint(ctx, regionOfInterest.minX, regionOfInterest.midY)
-        let endPoint = CGPointMake(regionOfInterest.maxX,regionOfInterest.midY)
-        CGContextAddLineToPoint(ctx, endPoint.x, endPoint.y)
+        ctx.setStrokeColor(self.strokeColor)
+        ctx.setLineWidth(self.strokeWidth)
+        ctx.move(to: CGPoint(x: regionOfInterest.minX, y: regionOfInterest.midY))
+        let endPoint = CGPoint(x: regionOfInterest.maxX, y: regionOfInterest.midY)
+        ctx.addLine(to: CGPoint(x: endPoint.x, y: endPoint.y))
         
-        CGContextDrawPath(ctx, CGPathDrawingMode.FillStroke)
+        ctx.drawPath(using: CGPathDrawingMode.fillStroke)
         
-        CGContextRestoreGState(ctx)
+        ctx.restoreGState()
         
         objc_sync_exit(self)
     }
