@@ -10,7 +10,7 @@ import UIKit
 import QuartzCore
 
 public class RSTargetLineLayer: CALayer {
-    open var strokeColor = UIColor(red: 255, green: 0, blue: 0, alpha: 1).cgColor
+    open var strokeColor = UIColor(red: 1.0, green: 0, blue: 0, alpha: 1).cgColor
     open var strokeWidth: CGFloat = 1
     
     open var regionOfInterest: CGRect = CGRect(x: 0, y: 0, width: 0, height: 0) {
