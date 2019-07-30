@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3821B8FE1C8CF3FE005B11BA /* RSTargetMaskLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3821B8FD1C8CF3FE005B11BA /* RSTargetMaskLayer.swift */; };
-		3821B9001C8CF437005B11BA /* RSTargetLineLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3821B8FF1C8CF437005B11BA /* RSTargetLineLayer.swift */; };
+		38F2E3CF22F0CDCA00C4D092 /* RSTargetMaskLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F2E3CD22F0CDC900C4D092 /* RSTargetMaskLayer.swift */; };
+		38F2E3D022F0CDCA00C4D092 /* RSTargetLineLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38F2E3CE22F0CDC900C4D092 /* RSTargetLineLayer.swift */; };
+		566905411DE3EE3B00B7D6D2 /* ContextMaker.h in Headers */ = {isa = PBXBuildFile; fileRef = 5669053F1DE3EE3B00B7D6D2 /* ContextMaker.h */; };
+		566905421DE3EE3B00B7D6D2 /* ContextMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = 566905401DE3EE3B00B7D6D2 /* ContextMaker.m */; };
 		D08336CA1A209AAB004EE128 /* RSCode39Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08336B91A209AAB004EE128 /* RSCode39Generator.swift */; };
 		D08336CB1A209AAB004EE128 /* RSCode39Mod43Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08336BA1A209AAB004EE128 /* RSCode39Mod43Generator.swift */; };
 		D08336CC1A209AAB004EE128 /* RSCode93Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = D08336BB1A209AAB004EE128 /* RSCode93Generator.swift */; };
@@ -31,8 +33,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		3821B8FD1C8CF3FE005B11BA /* RSTargetMaskLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RSTargetMaskLayer.swift; path = Source/RSTargetMaskLayer.swift; sourceTree = SOURCE_ROOT; };
-		3821B8FF1C8CF437005B11BA /* RSTargetLineLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RSTargetLineLayer.swift; path = Source/RSTargetLineLayer.swift; sourceTree = SOURCE_ROOT; };
+		38F2E3CD22F0CDC900C4D092 /* RSTargetMaskLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RSTargetMaskLayer.swift; path = Source/RSTargetMaskLayer.swift; sourceTree = SOURCE_ROOT; };
+		38F2E3CE22F0CDC900C4D092 /* RSTargetLineLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RSTargetLineLayer.swift; path = Source/RSTargetLineLayer.swift; sourceTree = SOURCE_ROOT; };
+		5669053F1DE3EE3B00B7D6D2 /* ContextMaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContextMaker.h; path = Source/ContextMaker.h; sourceTree = SOURCE_ROOT; };
+		566905401DE3EE3B00B7D6D2 /* ContextMaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContextMaker.m; path = Source/ContextMaker.m; sourceTree = SOURCE_ROOT; };
+		566905431DE3F19100B7D6D2 /* RSBarcodes-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "RSBarcodes-Bridging-Header.h"; path = "Source/RSBarcodes-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		D08336371A202E81004EE128 /* RSBarcodes.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = RSBarcodes.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D08336B81A209AA0004EE128 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Source/Info.plist; sourceTree = SOURCE_ROOT; };
 		D08336B91A209AAB004EE128 /* RSCode39Generator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RSCode39Generator.swift; path = Source/RSCode39Generator.swift; sourceTree = SOURCE_ROOT; };
@@ -86,6 +91,11 @@
 		D08336391A202E81004EE128 /* RSBarcodes */ = {
 			isa = PBXGroup;
 			children = (
+				38F2E3CE22F0CDC900C4D092 /* RSTargetLineLayer.swift */,
+				38F2E3CD22F0CDC900C4D092 /* RSTargetMaskLayer.swift */,
+				566905431DE3F19100B7D6D2 /* RSBarcodes-Bridging-Header.h */,
+				5669053F1DE3EE3B00B7D6D2 /* ContextMaker.h */,
+				566905401DE3EE3B00B7D6D2 /* ContextMaker.m */,
 				D08336BD1A209AAB004EE128 /* RSCodeGenerator.swift */,
 				E71A74271C914B0C0081B389 /* RSUnifiedCodeValidator.swift */,
 				D08336C61A209AAB004EE128 /* RSUnifiedCodeGenerator.swift */,
@@ -106,8 +116,6 @@
 				D08336C81A209AAB004EE128 /* StringExtension.swift */,
 				D08336C91A209AAB004EE128 /* UIColorExtension.swift */,
 				D083363A1A202E81004EE128 /* Supporting Files */,
-				3821B8FD1C8CF3FE005B11BA /* RSTargetMaskLayer.swift */,
-				3821B8FF1C8CF437005B11BA /* RSTargetLineLayer.swift */,
 			);
 			path = RSBarcodes;
 			sourceTree = "<group>";
@@ -127,6 +135,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				566905411DE3EE3B00B7D6D2 /* ContextMaker.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,21 +167,22 @@
 			attributes = {
 				LastSwiftMigration = 0700;
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0800;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = P.D.Q.;
 				TargetAttributes = {
 					D08336361A202E81004EE128 = {
 						CreatedOnToolsVersion = 6.1;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 1020;
 					};
 				};
 			};
 			buildConfigurationList = D08336311A202E81004EE128 /* Build configuration list for PBXProject "RSBarcodes" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = D083362D1A202E81004EE128;
 			productRefGroup = D08336381A202E81004EE128 /* Products */;
@@ -189,17 +199,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3821B8FE1C8CF3FE005B11BA /* RSTargetMaskLayer.swift in Sources */,
 				D08336DA1A209AAB004EE128 /* UIColorExtension.swift in Sources */,
 				D08336CA1A209AAB004EE128 /* RSCode39Generator.swift in Sources */,
 				D0E879421BDE13D000D1A577 /* RSCodeDataMatrixGenerator.swift in Sources */,
 				D08336D61A209AAB004EE128 /* RSITFGenerator.swift in Sources */,
 				D08336D41A209AAB004EE128 /* RSFocusMarkLayer.swift in Sources */,
+				38F2E3D022F0CDCA00C4D092 /* RSTargetLineLayer.swift in Sources */,
 				D08336CE1A209AAB004EE128 /* RSCodeGenerator.swift in Sources */,
+				38F2E3CF22F0CDCA00C4D092 /* RSTargetMaskLayer.swift in Sources */,
 				D08336D91A209AAB004EE128 /* StringExtension.swift in Sources */,
 				D08336D71A209AAB004EE128 /* RSUnifiedCodeGenerator.swift in Sources */,
 				D08336CD1A209AAB004EE128 /* RSCode128Generator.swift in Sources */,
 				E71A74281C914B0C0081B389 /* RSUnifiedCodeValidator.swift in Sources */,
+				566905421DE3EE3B00B7D6D2 /* ContextMaker.m in Sources */,
 				D08336CF1A209AAB004EE128 /* RSCodeLayer.swift in Sources */,
 				D08336D51A209AAB004EE128 /* RSITF14Generator.swift in Sources */,
 				D08336D01A209AAB004EE128 /* RSCodeReaderViewController.swift in Sources */,
@@ -209,7 +221,6 @@
 				D08336D21A209AAB004EE128 /* RSEANGenerator.swift in Sources */,
 				D08336CC1A209AAB004EE128 /* RSCode93Generator.swift in Sources */,
 				D08336CB1A209AAB004EE128 /* RSCode39Mod43Generator.swift in Sources */,
-				3821B9001C8CF437005B11BA /* RSTargetLineLayer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -220,18 +231,27 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -259,7 +279,9 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Source/RSBarcodes-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
@@ -270,18 +292,27 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -301,7 +332,9 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Source/RSBarcodes-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -312,6 +345,7 @@
 		D083364E1A202E81004EE128 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -323,13 +357,15 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.pdq.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
 		D083364F1A202E81004EE128 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -341,7 +377,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.pdq.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

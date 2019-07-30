@@ -96,12 +96,12 @@ open class RSCode93Generator: RSAbstractCodeGenerator, RSCheckDigitGenerator {
     
     override open func barcode(_ contents: String) -> String {
         var barcode = ""
-        for character in contents.characters {
+        for character in contents {
             barcode += self.encodeCharacterString(String(character))
         }
         
         let checkDigits = self.checkDigit(contents)
-        for character in checkDigits.characters {
+        for character in checkDigits {
             barcode += self.encodeCharacterString(String(character))
         }
         return barcode
@@ -115,8 +115,7 @@ open class RSCode93Generator: RSAbstractCodeGenerator, RSCheckDigitGenerator {
         // The first character
         var sum = 0
         for i in 0..<contents.length() {
-            let character = contents[contents.length() - i - 1]
-            if let character = character {
+            if let character = contents[contents.length() - i - 1] {
                 let characterValue = CODE93_ALPHABET_STRING.location(character)
                 sum += characterValue * (i % 20 + 1)
             }
@@ -128,8 +127,7 @@ open class RSCode93Generator: RSAbstractCodeGenerator, RSCheckDigitGenerator {
         sum = 0
         let newContents = contents + checkDigits
         for i in 0..<newContents.length() {
-            let character = newContents[newContents.length() - i - 1]
-            if let character = character {
+            if let character = newContents[newContents.length() - i - 1] {
                 let characterValue = CODE93_ALPHABET_STRING.location(character)
                 sum += characterValue * (i % 15 + 1)
             }

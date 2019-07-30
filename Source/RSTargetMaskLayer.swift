@@ -32,7 +32,7 @@ public class RSTargetMaskLayer: CALayer {
         maskPath.addRect(CGRect(x: 0, y: 0, width: 2000, height: 2000))
         maskPath.addPath(UIBezierPath(roundedRect: regionOfInterest, cornerRadius: 10).cgPath)
         maskLayer.path = maskPath
-        maskLayer.fillRule = kCAFillRuleEvenOdd
+        maskLayer.fillRule = CAShapeLayerFillRule.evenOdd
         self.mask = maskLayer
         
         ctx.drawPath(using: CGPathDrawingMode.fillStroke)

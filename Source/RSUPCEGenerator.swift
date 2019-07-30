@@ -54,8 +54,7 @@ open class RSUPCEGenerator: RSAbstractCodeGenerator, RSCheckDigitGenerator {
     
     func convert2UPC_A(_ contents:String) -> String {
         var upc_a = ""
-        let code = contents.substring(1, length: contents.length() - 2)
-        if let code = code {
+        if let code = contents.substring(1, length: contents.length() - 2) {
             let lastDigit = Int(code[code.length() - 1])!
             var insertDigits = "0000"
             switch lastDigit {
